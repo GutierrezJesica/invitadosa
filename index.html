@@ -47,6 +47,7 @@
 
             --radius: 8px;
             --transition: 250ms ease;
+            --ease-luxury: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
 
@@ -163,6 +164,9 @@
         }
 
         .main-nav a {
+            position: relative;
+            display: inline-block;
+
             text-decoration: none;
             font-size: 0.72rem;
             letter-spacing: 0.03em;
@@ -171,8 +175,28 @@
             transition: color var(--transition);
         }
 
-        .main-nav a:hover {
+        .main-nav a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -6px;
+            width: 100%;
+            height: 1px;
+
+            background: var(--color-primary);
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform 350ms var(--ease-luxury);
+        }
+
+        .main-nav a:hover,
+        .main-nav a:focus-visible {
             color: var(--color-primary-dark);
+        }
+
+        .main-nav a:hover::after,
+        .main-nav a:focus-visible::after {
+            transform: scaleX(1);
         }
 
 
@@ -187,6 +211,17 @@
             align-items: center;
 
             position: relative;
+            isolation: isolate;
+            overflow: hidden;
+
+            color: var(--color-white);
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: -3%;
+            z-index: -2;
 
             background:
                 linear-gradient(
@@ -197,7 +232,25 @@
                 url("assets/images/BG-01.webp")
                 center / cover no-repeat;
 
-            color: var(--color-white);
+            transform: scale(1.04);
+            animation: heroKenBurns 14s ease-out forwards;
+            will-change: transform;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+
+            background: linear-gradient(
+                180deg,
+                rgba(0, 0, 0, 0.08),
+                transparent 45%,
+                rgba(0, 0, 0, 0.12)
+            );
+
+            pointer-events: none;
         }
 
         .hero-content {
@@ -207,6 +260,28 @@
 
         .hero-copy {
             max-width: 620px;
+        }
+
+        .hero-copy > * {
+            opacity: 0;
+            transform: translateY(24px);
+            animation: heroReveal 900ms var(--ease-luxury) forwards;
+        }
+
+        .hero-copy > :nth-child(1) {
+            animation-delay: 150ms;
+        }
+
+        .hero-copy > :nth-child(2) {
+            animation-delay: 300ms;
+        }
+
+        .hero-copy > :nth-child(3) {
+            animation-delay: 450ms;
+        }
+
+        .hero-copy > :nth-child(4) {
+            animation-delay: 600ms;
         }
 
         .eyebrow {
@@ -356,10 +431,6 @@
 
         .details {
             background: var(--color-bg-soft);
-            background-image: url("assets/images/follage.webp");
-            background-position: center;
-            background-size: cover;
-            background-repeat: no-repeat;
         }
 
         .details-grid {
@@ -690,6 +761,142 @@
 
 
         /* =========================================================
+           ANIMACIONES
+        ========================================================= */
+
+        @keyframes heroKenBurns {
+            from {
+                transform: scale(1.04);
+            }
+
+            to {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes heroReveal {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes gentleFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes countdownPulse {
+            0% {
+                transform: scale(1);
+            }
+
+            45% {
+                transform: scale(1.08);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        [data-reveal] {
+            opacity: 0;
+            transform: translateY(32px);
+            transition:
+                opacity 800ms var(--ease-luxury),
+                transform 800ms var(--ease-luxury);
+            transition-delay: var(--reveal-delay, 0ms);
+        }
+
+        [data-reveal].is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .detail[data-reveal].is-visible .detail-icon img,
+        .useful-item[data-reveal].is-visible .useful-icon img {
+            animation: gentleFloat 4s ease-in-out 700ms infinite;
+        }
+
+        .gallery-item[data-reveal] {
+            transform: translateY(32px) scale(0.97);
+        }
+
+        .gallery-item[data-reveal].is-visible {
+            transform: translateY(0) scale(1);
+        }
+
+        .gallery-item img {
+            transition:
+                transform 700ms var(--ease-luxury),
+                filter 700ms var(--ease-luxury);
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.055);
+            filter: saturate(1.06);
+        }
+
+        .button span[aria-hidden="true"] {
+            display: inline-block;
+            transition: transform 350ms var(--ease-luxury);
+        }
+
+        .button:hover span[aria-hidden="true"],
+        .button:focus-visible span[aria-hidden="true"] {
+            transform: translateX(4px);
+        }
+
+        .countdown-item {
+            transition:
+                transform 350ms var(--ease-luxury),
+                background-color 350ms ease;
+        }
+
+        .countdown-item.is-changing {
+            animation: countdownPulse 500ms var(--ease-luxury);
+        }
+
+        .rsvp::before {
+            content: "";
+            position: absolute;
+            inset: -4%;
+            z-index: 0;
+
+            background: inherit;
+            transform: scale(1.02);
+            animation: rsvpBreath 16s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        .rsvp-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes rsvpBreath {
+            from {
+                transform: scale(1.02);
+            }
+
+            to {
+                transform: scale(1.06);
+            }
+        }
+
+
+        /* =========================================================
            REDUCED MOTION
         ========================================================= */
 
@@ -704,6 +911,12 @@
             *::after {
                 transition-duration: 0.01ms !important;
                 animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+            }
+
+            [data-reveal] {
+                opacity: 1 !important;
+                transform: none !important;
             }
         }
 
@@ -842,7 +1055,7 @@
 
             <div class="section-inner">
 
-                <div class="section-header">
+                <div class="section-header" data-reveal>
 
                     <h2
                         class="section-title"
@@ -858,7 +1071,7 @@
 
                 </div>
 
-                <p class="intro-text">
+                <p class="intro-text" data-reveal style="--reveal-delay: 120ms;">
                     Después de tanto imaginar este día,
                     finalmente llegó el momento de compartirlo
                     con las personas que queremos.
@@ -881,7 +1094,7 @@
 
             <div class="section-inner">
 
-                <div class="section-header">
+                <div class="section-header" data-reveal>
 
                     <h2
                         class="section-title"
@@ -902,7 +1115,7 @@
 
                     <!-- FECHA -->
 
-                    <article class="detail">
+                    <article class="detail" data-reveal style="--reveal-delay: 120ms;">
 
                         <div
                             class="detail-icon"
@@ -928,7 +1141,7 @@
 
                     <!-- LUGAR -->
 
-                    <article class="detail">
+                    <article class="detail" data-reveal style="--reveal-delay: 120ms;">
 
                         <div
                             class="detail-icon"
@@ -964,7 +1177,7 @@
 
                     <!-- COUNTDOWN -->
 
-                    <article class="detail">
+                    <article class="detail" data-reveal style="--reveal-delay: 120ms;">
 
                         <span class="detail-label">
                             Faltan
@@ -1054,7 +1267,7 @@
 
             <div class="section-inner">
 
-                <div class="section-header">
+                <div class="section-header" data-reveal>
 
                     <h2
                         class="section-title"
@@ -1073,7 +1286,7 @@
 
                 <div class="gallery-grid">
 
-                    <figure class="gallery-item">
+                    <figure class="gallery-item" data-reveal style="--reveal-delay: 120ms;">
                         <img
                             src="assets/images/BG-02.webp"
                             alt="Alice y Martín juntos durante una sesión de fotos"
@@ -1081,7 +1294,7 @@
                         >
                     </figure>
 
-                    <figure class="gallery-item">
+                    <figure class="gallery-item" data-reveal style="--reveal-delay: 120ms;">
                         <img
                             src="assets/images/BG-07.webp"
                             alt="Ramo de flores de la boda"
@@ -1089,7 +1302,7 @@
                         >
                     </figure>
 
-                    <figure class="gallery-item">
+                    <figure class="gallery-item" data-reveal style="--reveal-delay: 120ms;">
                         <img
                             src="assets/images/BG-03.webp"
                             alt="Mesa preparada para la celebración"
@@ -1097,7 +1310,7 @@
                         >
                     </figure>
 
-                    <figure class="gallery-item">
+                    <figure class="gallery-item" data-reveal style="--reveal-delay: 120ms;">
                         <img
                             src="assets/images/BG-04.webp"
                             alt="Lugar donde se realizará la celebración"
@@ -1105,7 +1318,7 @@
                         >
                     </figure>
 
-                    <figure class="gallery-item">
+                    <figure class="gallery-item" data-reveal style="--reveal-delay: 120ms;">
                         <img
                             src="assets/images/BG-05.webp"
                             alt="Detalle de las manos de Alice y Martín"
@@ -1113,7 +1326,7 @@
                         >
                     </figure>
 
-                    <figure class="gallery-item">
+                    <figure class="gallery-item" data-reveal style="--reveal-delay: 120ms;">
                         <img
                             src="assets/images/BG-06.webp"
                             alt="Alice y Martín durante una puesta de sol"
@@ -1140,7 +1353,7 @@
 
             <div class="section-inner">
 
-                <div class="section-header">
+                <div class="section-header" data-reveal>
 
                     <h2
                         class="section-title"
@@ -1159,7 +1372,7 @@
 
                 <div class="useful-grid">
 
-                    <article class="useful-item">
+                    <article class="useful-item" data-reveal style="--reveal-delay: 120ms;">
 
                         <div
                             class="useful-icon"
@@ -1179,7 +1392,7 @@
                     </article>
 
 
-                    <article class="useful-item">
+                    <article class="useful-item" data-reveal style="--reveal-delay: 120ms;">
 
                         <div
                             class="useful-icon"
@@ -1200,7 +1413,7 @@
                     </article>
 
 
-                    <article class="useful-item">
+                    <article class="useful-item" data-reveal style="--reveal-delay: 120ms;">
 
                         <div
                             class="useful-icon"
@@ -1222,7 +1435,7 @@
                     </article>
 
 
-                    <article class="useful-item">
+                    <article class="useful-item" data-reveal style="--reveal-delay: 120ms;">
 
                         <div
                             class="useful-icon"
@@ -1261,7 +1474,7 @@
 
             <div class="section-inner">
 
-                <div class="rsvp-content">
+                <div class="rsvp-content" data-reveal>
 
                     <h2 id="titulo-confirmacion">
                         ¿Nos acompañás?
@@ -1405,6 +1618,55 @@
 
             secondsElement.textContent =
                 String(segundos).padStart(2, "0");
+
+            secondsElement.parentElement.classList.remove("is-changing");
+
+            requestAnimationFrame(() => {
+                secondsElement.parentElement.classList.add("is-changing");
+            });
+        }
+
+
+        /*
+         * ========================================================
+         * REVEAL AL HACER SCROLL
+         * ========================================================
+         */
+
+        const elementosReveal =
+            document.querySelectorAll("[data-reveal]");
+
+        if ("IntersectionObserver" in window) {
+
+            const revealObserver =
+                new IntersectionObserver(
+                    (entries, observer) => {
+
+                        entries.forEach((entry) => {
+
+                            if (!entry.isIntersecting) {
+                                return;
+                            }
+
+                            entry.target.classList.add("is-visible");
+                            observer.unobserve(entry.target);
+                        });
+                    },
+                    {
+                        threshold: 0.15,
+                        rootMargin: "0px 0px -60px"
+                    }
+                );
+
+            elementosReveal.forEach((elemento) => {
+                revealObserver.observe(elemento);
+            });
+
+        } else {
+
+            elementosReveal.forEach((elemento) => {
+                elemento.classList.add("is-visible");
+            });
         }
 
 
